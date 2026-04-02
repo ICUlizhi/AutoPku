@@ -1,0 +1,146 @@
+# AutoPku 课程配置文件
+# 填写你的课程信息，Agent 会根据这个配置自动分类通知
+
+team:
+  name: "autopku"
+  description: "PKU课程通知自动管理系统"
+  mode: "single"  # 模式：single（单Agent）或 multi（多Agent Team）
+
+# ================================
+# 课程列表配置
+# ================================
+# 为每门课程添加一个条目：
+# - name: 课程显示名称
+#   folder: 课程文件夹路径（相对或绝对）
+#   keywords: 匹配关键词列表（用于识别教学网课程）
+#   color: 报告中的颜色标识（可选）
+
+courses:
+  # 示例课程 1：思政课
+  - name: "马克思主义基本原理"
+    folder: "./马原"
+    keywords:
+      - "马原"
+      - "马克思主义基本原理"
+      - "马克思主义"
+    color: "blue"
+
+  # 示例课程 2：英语课
+  - name: "学术英语写作"
+    folder: "./学术英语写作"
+    keywords:
+      - "学术英语"
+      - "学术英语写作"
+      - "AEW"
+    color: "green"
+
+  # 示例课程 3：专业课
+  - name: "逻辑导论"
+    folder: "./逻辑导论"
+    keywords:
+      - "逻辑导论"
+      - "逻辑学"
+    color: "yellow"
+
+  # 示例课程 4：毕业论文
+  - name: "毕业论文"
+    folder: "./毕设"
+    keywords:
+      - "毕设"
+      - "毕业论文"
+      - "毕业设计"
+    color: "purple"
+
+  # 示例课程 5：选修课
+  - name: "财务报表分析"
+    folder: "./财务报表分析"
+    keywords:
+      - "财务报表分析"
+      - "财报分析"
+    color: "orange"
+
+  # 示例课程 6：实践课
+  - name: "科技创新实践"
+    folder: "./科技创新实践"
+    keywords:
+      - "科技创新实践"
+      - "科创实践"
+    color: "pink"
+
+  # 示例课程 7：通选课
+  - name: "简明量子力学"
+    folder: "./简明量子力学"
+    keywords:
+      - "量子力学"
+      - "简明量子力学"
+      - "量子"
+    color: "cyan"
+
+  # 添加你的课程...
+  # - name: "你的课程名"
+  #   folder: "./你的课程文件夹"
+  #   keywords: ["关键词1", "关键词2"]
+  #   color: "red"
+
+# ================================
+# 分类规则配置（可选）
+# ================================
+classification:
+  assignment:
+    patterns:
+      - "作业"
+      - "Assignment"
+      - "Homework"
+      - "习题"
+    folder: "作业"
+    priority: "normal"
+
+  notification:
+    patterns:
+      - "通知"
+      - "公告"
+      - "Notice"
+      - "Announcement"
+    folder: "通知"
+    priority: "low"
+
+  material:
+    patterns:
+      - "资料"
+      - "课件"
+      - "PPT"
+      - "讲义"
+      - "参考书"
+      - "阅读材料"
+    folder: "资料"
+    priority: "low"
+
+  exam:
+    patterns:
+      - "考试"
+      - "测验"
+      - "Quiz"
+      - "Exam"
+      - "期中"
+      - "期末"
+    folder: "考试"
+    priority: "high"  # 高优先级提醒
+
+# ================================
+# 通知推送配置（可选）
+# ================================
+# notifications:
+#   webhook:
+#     # 企业微信机器人
+#     url: "https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=YOUR_KEY"
+#     events:
+#       - "新作业发布"
+#       - "DDL提醒"
+#
+#   email:
+#     smtp: "smtp.pku.edu.cn"
+#     port: 25
+#     username: "your_id@pku.edu.cn"
+#     password: "your_password"
+#     to: "your_email@example.com"
+#     schedule: "daily"  # daily, weekly, or immediate

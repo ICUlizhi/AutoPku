@@ -1,0 +1,43 @@
+# AutoPku Gitignore
+
+# 课程文件夹内容（用户个人数据，不提交到仓库）
+courses/*/
+!courses/.gitkeep
+
+# 生成的报告（动态生成，不提交）
+reports/*.md
+
+# 个人配置文件（可能包含敏感信息）
+config/local.yaml
+config/private.yaml
+*.local.yaml
+
+# pku3b 认证信息
+.pku3b/
+*.token
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+dist/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# 日志
+*.log
