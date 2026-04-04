@@ -53,6 +53,9 @@ This is the Codex entrypoint for the AutoPku project.
 - Prefer a dedicated work directory such as `./autopku-work/` or a user-specified path instead of hardcoding `test/`.
 - If live command behavior differs from the repository notes, trust current command output and update working notes during execution.
 - If the request is only to install or inspect the skill, stop after setup verification.
+- Prefer `pku3b` from `PATH`, but if Homebrew is installed on Apple Silicon, explicitly check `/opt/homebrew/bin/pku3b` as a common location.
+- The standard local config path on macOS is `~/Library/Application Support/org.sshwy.pku3b/cfg.toml`; confirm it exists before attempting login flows that assume stored credentials.
+- If `pku3b s -d major show` or similar syllabus commands fail with a redirect or auth error, treat them as optional enrichment rather than a hard prerequisite and continue with assignment-driven course discovery from `pku3b a ls` or `pku3b a ls --all-term`.
 
 ## Verification
 
@@ -60,3 +63,9 @@ This is the Codex entrypoint for the AutoPku project.
 - Confirm login succeeded before fetching data.
 - Confirm expected files exist on disk after downloads or rendering.
 - Before any submission step, confirm the selected assignment matches the user's explicit choice.
+
+## Validation Notes
+
+- Verified against a local install at `/opt/homebrew/bin/pku3b`.
+- Verified that `pku3b a ls` can return live assignment data with an existing config.
+- Observed that `pku3b s -d major show` may fail with `302 Found` on some accounts, so the workflow must not depend exclusively on that command.
