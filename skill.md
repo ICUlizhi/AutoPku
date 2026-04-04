@@ -3,6 +3,9 @@ name: autopku
 description: 自动获取和整理北京大学课程通知，完成作业并提交
 ---
 
+> Claude Code 入口。
+> 如果你使用 Codex，请改为读取 `codex/autopku/SKILL.md`。
+
 ## 前置配置
 
 在执行此 skill 前，需要确保本地 `.claude/settings.local.json` 包含以下配置：

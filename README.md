@@ -12,7 +12,7 @@
 ---
 ## 快速开始
 
-事先自行解决 claude code 安装
+本仓库现在同时支持 Claude Code 和 Codex 两种模式。
 
 ### 第一步：下载 Skill
 
@@ -20,7 +20,15 @@
 git clone https://github.com/ICUlizhi/AutoPku.git
 ```
 
-### 第二步：交给 Claude Code
+如果你是从自己的 fork 使用，也可以：
+
+```bash
+git clone git@github.com:187370/AutoPku.git
+```
+
+### 第二步：选择 Agent 运行模式
+
+#### 方式 A：Claude Code
 
 在 Claude Code 中加载 skill：
 
@@ -34,7 +42,17 @@ git clone https://github.com/ICUlizhi/AutoPku.git
 学号是 2200011111，密码是 xxx
 ```
 
-### 第三步：离开电脑，相信cc
+#### 方式 B：Codex
+
+如果你只是本地试跑，可以直接让 Codex 读取：
+
+```
+读取 AutoPku/codex/autopku/SKILL.md，并执行
+```
+
+如果你想把它安装成可复用的 Codex skill，安装路径使用仓库内的 `codex/autopku` 目录即可。
+
+### 第三步：离开电脑，相信 agent
 去拥抱北平难得的春天
 
 ![alt text](images/ccui.png)
@@ -58,9 +76,14 @@ git clone https://github.com/ICUlizhi/AutoPku.git
 ##  Introduction
 
 
-本项目基于 Claude Code 的实验性 Agent Team 功能实现。但我没有选择自建一套 Agent 系统，而是将全部领域逻辑（教学网登录 via pku3b、PDF 解析策略、LaTeX 渲染管线、教学网提交协议等）内嵌在一个 skill.md 文件中。原因是：
+本项目最初基于 Claude Code 的实验性 Agent Team 功能实现。现在仓库同时保留：
+
+- 根目录 `skill.md`：Claude Code 入口
+- `codex/autopku/SKILL.md`：Codex 入口
+
+我没有选择自建一套 Agent 系统，而是将全部领域逻辑（教学网登录 via pku3b、PDF 解析策略、LaTeX 渲染管线、教学网提交协议等）内嵌在 skill 文件中。原因是：
 - **由一体化 Agentic RL 训练出的 Claude Code，工具调用被蒸馏回了模型参数，且涌现出了人类炼丹师想不到的pattern, 其内置的能力远优于手工搭建的 Agent 框架**。
-- 与其维护一套需要单独配置 API key 的外部系统，不如直接利用每个人本地已配置好的 Claude Code 实例——它已经有了用户的 context，已经具备了执行环境，已经是高度自由的通用 agent。
+- 与其维护一套需要单独配置 API key 的外部系统，不如直接利用每个人本地已配置好的通用 coding agent 实例。
 
 
 ---
@@ -216,6 +239,5 @@ Team: autopku-team
 - 目前兼容的作业类型不够多，后期希望加载更多 skill 例如 pptx 绘制，欢迎提 pr. 
 
 ---
-
 
 
