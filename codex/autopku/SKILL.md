@@ -9,8 +9,9 @@ description: Use when the user wants Codex to automate PKU coursework workflows 
 
 This is the Codex entrypoint for the AutoPku project.
 
-- Claude Code users should use the repository root [skill.md](../../skill.md).
+- Claude Code users should use the repository root `skill.md`.
 - Codex users should use this file.
+- If this skill was installed standalone, use [references/upstream-skill.md](references/upstream-skill.md) as the bundled upstream reference.
 
 ## Use When
 
@@ -27,7 +28,7 @@ This is the Codex entrypoint for the AutoPku project.
 
 ## Default Workflow
 
-1. Read the repository root [skill.md](../../skill.md) when it is available in the checked-out repo. Use it as domain guidance for PKU-specific commands, parsing quirks, and pitfalls.
+1. Read the bundled reference [references/upstream-skill.md](references/upstream-skill.md). If the checked-out repository root `skill.md` is also available, prefer the newer copy as domain guidance for PKU-specific commands, parsing quirks, and pitfalls.
 2. Ask the user for student ID and password only when the task truly requires portal access.
 3. Check whether `pku3b` is installed. If not, install the correct release for the local machine instead of assuming the example URL is still current.
 4. Use a TTY-safe login flow such as `expect` for `pku3b init`.
