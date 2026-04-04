@@ -1,10 +1,8 @@
 # AutoPku
 
-> 北京大学本科全自动解决方案 | 从通知获取到作业提交，全程 AI 托管
+> 北京大学本科全自动解决方案 | 从通知获取到作业提交，全程 Agent Team 托管
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Agent Team](https://img.shields.io/badge/Agent%20Team-Experimental-blue)](https://github.com/anthropics/claude-code)
-[![pku3b](https://img.shields.io/badge/pku3b-Compatible-green)](https://github.com/sshwy/pku3b)
+
 
 **只需学号密码 → AI 自动完成一切**
 
@@ -50,26 +48,20 @@ git clone https://github.com/ICUlizhi/AutoPku.git
 
 我理想中的 Agent 终极形态是这样的：给主 Agent 下达一个摘星揽月的宏观命令——"点燃木星"——它能够像《2010》中的黑色巨石那样，自我复制、有序分裂、集体协作、最终汇报。巨石们无需通过中央指挥来协调，而是通过极简的本地通信和相变识别（当密度达到临界点，木星变成恒星），完成了一个行星尺度的工程。
 
-**现状是骨感的。** Agent Team 目前甚至连明确定义都没有——业界常说的 Multi-Agent 到底是指多个独立实例的协作，还是一个主 Agent 的函数调用？实现层面也极其初级，Kimi 的 Agent Swarm 和 Claude 的实验性功能提供了基础能力，但参数层面根本没有针对"自我复制与协作"进行训练。我们甚至没有普适的评估基准（benchmark）来衡量一个 Agent 系统的"增殖效率"或"解决问题的能力"。
+**现状是骨感的。** Agent Team 目前甚至连明确定义都没有——业界常说的 Multi-Agent 到底是指多个独立实例的协作，还是一个主 Agent 的函数调用？实现层面也极其初级，Kimi 的 Agent Swarm 和 Claude 的实验性功能提供了基础能力，但参数层面根本没有针对"自我复制与协作"进行训练。我们甚至尚没有足够权威的评估基准（benchmark）来衡量一个 Agent 系统的"增殖效率"或"解决问题的能力"。
 
 但这正是探索的意义所在。如果一切都已成熟，那留给我们的就只有调参的工作了。
 
 就从**让 agent 完成我的北大学业**开始吧。
 
 ---
-## Introduction
+##  Introduction
 
-当前 AI Agent 领域存在一个根本性矛盾：我们一方面期待 Agent 能够处理复杂的真实世界任务，另一方面现有的单 Agent 架构却在上下文管理、任务并行和长期规划上表现出明显的瓶颈。以 AutoGPT、OpenClaw 等为代表的早期探索虽然验证了概念可行性，但在面对多课程并行、长链路依赖的场景时，串行执行导致的效率低下和上下文遗忘问题变得难以忽视。
-
-Agent Team 架构提供了一种不同的思路。与其在单个 Agent 的上下文窗口内不断堆叠复杂度，不如将任务天然地拆分为多个独立执行的单元，每个单元由专门的 Agent 负责，通过结构化的消息传递进行协作。这种架构与分布式系统中的微服务理念类似：关注点分离、故障隔离、并行扩展。
 
 本项目基于 Claude Code 的实验性 Agent Team 功能实现。但我没有选择自建一套 Agent 系统，而是将全部领域逻辑（教学网登录 via pku3b、PDF 解析策略、LaTeX 渲染管线、教学网提交协议等）内嵌在一个 skill.md 文件中。原因是：
 - **由一体化 Agentic RL 训练出的 Claude Code，工具调用被蒸馏回了模型参数，且涌现出了人类炼丹师想不到的pattern, 其内置的能力远优于手工搭建的 Agent 框架**。
-- 与其维护一套需要单独配置 API key 的外部系统，不如直接利用每个人本地已配置好的 Claude Code 实例——它已经有了用户的 context，已经通过了身份验证，已经具备了代码执行环境。
+- 与其维护一套需要单独配置 API key 的外部系统，不如直接利用每个人本地已配置好的 Claude Code 实例——它已经有了用户的 context，已经具备了执行环境，已经是高度自由的通用 agent。
 
-目前业界对多 Agent 协作的探索仍处于早期。仅有 Kimi 的 Agent Swarm 和 Claude Code 的实验性功能提供了基础能力。
-
-本项目的价值在于验证一个端到端的完整流程：从教学网认证到作业提交，全链路由 Agent Team 自主完成。
 
 ---
 
@@ -221,13 +213,9 @@ Team: autopku-team
 ---
 ## Discussion
 
-- 目前兼容的作业类型不够多，后期希望加载更多 skill 例如 pptx 绘制，欢迎提pr. 
+- 目前兼容的作业类型不够多，后期希望加载更多 skill 例如 pptx 绘制，欢迎提 pr. 
 
 ---
 
-## 许可证
 
-MIT License - 自由使用和修改
-
----
 
