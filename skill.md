@@ -53,11 +53,18 @@ which pku3b 2>/dev/null || echo "NOT_FOUND"
 如果未找到，从 GitHub Release 下载（以 macOS Apple Silicon 为例）：
 ```bash
 cd /tmp
-curl -LO "https://github.com/sshwy/pku3b/releases/download/0.10.3/pku3b-0.10.3-aarch64-apple-darwin.tar.gz"
-tar -xzf pku3b-0.10.3-aarch64-apple-darwin.tar.gz
-chmod +x pku3b
+# 最新版本（推荐）：v0.11.0+ 支持公告和课表功能
+curl -LO "https://github.com/sshwy/pku3b/releases/download/0.11.0/pku3b-0.11.0-aarch64-apple-darwin.tar.gz"
+tar -xzf pku3b-0.11.0-aarch64-apple-darwin.tar.gz
+chmod +x pku3b-0.11.0-aarch64-apple-darwin/pku3b
+ln -sf pku3b-0.11.0-aarch64-apple-darwin/pku3b pku3b
 ./pku3b --version
 ```
+
+> **版本说明**：
+> - v0.11.0+ 新增公告 (`ann`) 和课表 (`ct`) 功能
+> - v0.10.3 仅支持作业、选课、视频功能
+> - 如需公告/课表功能，请使用 v0.11.0 或更高版本
 
 > **踩坑记录**：原仓库 `yang-er/pku3b` 已不存在或失效，安装脚本返回 404。正确仓库是 `sshwy/pku3b`：
 > - GitHub: https://github.com/sshwy/pku3b
@@ -928,11 +935,176 @@ for course in current_semester_courses:
 /tmp/pku3b v download <视频ID> -d <目标目录>
 ```
 
+### 6. 公告和课表功能（v0.11.0+）
+
+**版本检查**：
+```bash
+/tmp/pku3b --version
+# 需要 >= 0.11.0 才能使用公告和课表功能
+```
+
+**公告 ID 获取**：
+- 公告 ID 从 `pku3b ann ls` 输出中提取，格式为 `(ID: xxxxxxxx)`
+- ID 是 8 位十六进制字符串
+
+**课表解析**：
+- 使用 `-r` 参数获取结构化 JSON 数据
+- JSON 包含课程名称、时间、地点、教师等信息
+- 可用于生成日历文件或验证课程安排
+
+## 公告与课表功能（pku3b v0.11.0+）
+
+pku3b 0.11.0 版本新增公告和课表功能，可增强通知摘要的信息完整性。
+
+### 公告功能
+
+**命令**：
+```bash
+# 列出所有课程公告
+/tmp/pku3b ann ls
+
+# 列出所有学期公告
+/tmp/pku3b ann ls --all-term
+
+# 查看公告详情
+/tmp/pku3b ann show <公告ID>
+```
+
+**集成到步骤 3**（获取作业数据后）：
+```bash
+# 获取公告列表
+/tmp/pku3b ann ls > /tmp/pku_announcements_raw.txt
+```
+
+**解析公告并关联课程**（Python）：
+```python
+import re
+import json
+
+with open('/tmp/pku_announcements_raw.txt', 'r') as f:
+    content = f.read()
+
+# 公告格式：ESC[36m课程名ESC[0m > ESC[1m公告标题ESC[0m (ID: xxx)
+pattern = r'\x1b\[36m([^\x1b]+?)\x1b\[0m\s+>\s+\x1b\[1m([^\x1b]+?)\x1b\[0m\s+\(ID:\s+([^)]+)\)'
+matches = re.findall(pattern, content)
+
+announcements = []
+for course, title, ann_id in matches:
+    announcements.append({
+        'course': course.strip(),
+        'title': title.strip(),
+        'id': ann_id.strip()
+    })
+
+# 保存供 Agent 使用
+with open('/tmp/pku_announcements.json', 'w') as f:
+    json.dump(announcements, f, ensure_ascii=False, indent=2)
+```
+
+**Agent Prompt 增强**：在生成 `通知摘要.md` 时添加公告章节：
+```markdown
+## 📢 最新公告
+| 公告标题 | 发布时间 |
+|---------|---------|
+| 第五次作业延期通知 | 2025-04-05 |
+| 期中考试安排 | 2025-04-03 |
+```
+
+### 课表功能
+
+**命令**：
+```bash
+# 获取课表（人类可读格式）
+/tmp/pku3b ct
+
+# 获取课表（JSON格式，用于解析）
+/tmp/pku3b ct -r
+```
+
+**应用场景**：
+
+1. **课程验证**：对比选课系统和课表，确认课程状态
+   ```bash
+   /tmp/pku3b ct -r > /tmp/coursetable.json
+   ```
+
+2. **日历导出**：生成 `.ics` 文件导入日历应用
+   ```python
+   import json
+   from datetime import datetime, timedelta
+
+   with open('/tmp/coursetable.json', 'r') as f:
+       data = json.load(f)
+
+   # 生成 iCalendar 格式
+   ics_content = "BEGIN:VCALENDAR\nVERSION:2.0\n"
+   for course in data.get('courses', []):
+       ics_content += f"""BEGIN:VEVENT
+   SUMMARY:{course['name']}
+   DTSTART:{course['start_time']}
+   DTEND:{course['end_time']}
+   LOCATION:{course.get('location', 'TBD')}
+   END:VEVENT
+   """
+   ics_content += "END:VCALENDAR"
+
+   with open('/tmp/pku_courses.ics', 'w') as f:
+       f.write(ics_content)
+   ```
+
+3. **作业优先级排序**：根据课程时间调整紧急度
+   - 明天有课 → 作业标记 🔴 高优先级
+   - 本周有课 → 作业标记 🟡 中优先级
+
+### Agent Prompt 模板（含公告）
+
+更新后的 Agent Prompt（生成通知摘要）：
+```
+你是课程 "{course_name}" 的专属 agent。
+
+工作目录：/Users/xxx/test
+
+你的任务：
+1. 读取 /tmp/pku_assignments.json 和 /tmp/pku_announcements.json
+2. 使用 Bash 运行 `/tmp/pku3b a ls --all-term` 获取作业数据
+3. 筛选 course 字段匹配 "{course_name}" 的作业和公告
+4. 创建目录结构：
+   test/{course_name}/
+   ├── 作业/
+   ├── 通知/
+   ├── 资料/
+   └── 通知摘要.md
+
+5. 下载作业附件（如果有）：
+   - 运行 `/tmp/pku3b a download <作业ID> -d test/{course_name}/作业/`
+
+6. 获取并保存公告详情（如果有公告）：
+   - 运行 `/tmp/pku3b ann show <公告ID>`
+   - 保存到 `通知/公告_{标题}.md`
+
+7. 生成 "test/{course_name}/通知摘要.md"，包含：
+   - 课程统计（总作业数、待交作业数、已完成数、逾期数）
+   - 📢 最新公告列表
+   - 待完成作业列表（带 🔴🟡🟢 紧急程度标识）
+   - 逾期作业列表
+   - 已完成作业列表
+   - 下载的文件列表（如果有）
+
+8. 返回执行摘要：
+   - 找到的作业数量
+   - 找到的公告数量
+   - 待交作业数量
+   - 下载的文件数量
+   - 创建的文件路径
+```
+
 ## 改进建议
 
 1. **课程状态检查**：在生成报告时，对比选课系统和作业系统的课程列表，标记不一致的情况
 2. **附件预检查**：在创建下载 Agent 前，先检查课程是否有附件，避免不必要的 Agent 创建
 3. **视频下载**：可考虑为每门课程同时下载课程回放视频到 `资料/` 目录
+4. **公告集成**：在通知摘要中显示最新公告，特别是作业延期、考试安排等重要通知
+5. **课表同步**：定期导出课表为日历文件，方便查看课程时间
 
 ---
 

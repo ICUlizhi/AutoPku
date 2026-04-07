@@ -57,6 +57,8 @@ git clone git@github.com:187370/AutoPku.git
 
 ![alt text](images/ccui.png)
 
+> hint: cc 目前不会主动激活 agent team, 后续再使用的时候你需要提及一下
+
 ---
 
 ## Motivation ：从《2010》到摘星揽月
