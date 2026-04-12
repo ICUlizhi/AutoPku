@@ -5,11 +5,9 @@ description: AutoPku - 自动获取PKU课程通知、完成作业、撰写笔记
 
 # AutoPku
 
-自动处理北京大学课程相关任务：同步通知、完成作业、撰写笔记。
+自动处理北京大学课程相关任务。
 
 ## 前置配置
-
-确保 `.claude/settings.local.json` 包含：
 
 ```json
 {
@@ -24,44 +22,55 @@ description: AutoPku - 自动获取PKU课程通知、完成作业、撰写笔记
 }
 ```
 
-## 你能做的事
+## 执行方式
 
-直接告诉我想做什么，例如：
+直接告诉我要做什么，例如：
+- "同步课程通知"
+- "完成量子力学的第五次作业"
+- "给逻辑导论写笔记"
 
-- "帮我同步一下课程通知"
-- "看看有哪些作业要交"
-- "完成简明量子力学的第五次习题"
-- "给逻辑导论写个笔记"
-- "下载所有课程的附件"
-- "检查一下哪些作业快到期了"
+## 内部机制
 
-## 可用能力
+### 1. 环境检测（执行时自动进行）
 
-| 能力 | 说明 | 引用 |
+```python
+import os
+
+if os.environ.get("CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"):
+    RUNTIME = "claude"
+elif os.environ.get("CODEX") == "1":
+    RUNTIME = "codex"
+else:
+    RUNTIME = "serial"
+```
+
+### 2. 统一 Agent 创建
+
+根据检测到的环境，自动选择 agent 创建方式：
+
+**Claude Code**: 使用 `Agent()` tool 并行创建
+**Codex**: 使用 native subagents
+**其他**: 串行执行
+
+### 3. Task 执行
+
+理解用户意图 → 确认关键信息 → 引用对应 task skill → 执行
+
+## Task Skills
+
+| 任务 | 说明 | 引用 |
 |------|------|------|
-| **同步通知** | 获取所有课程作业/公告，生成摘要 | `tasks/sync-notices.md` |
-| **完成作业** | 解析作业PDF→解答→渲染→询问→提交 | `tasks/do-homework.md` |
-| **撰写笔记** | 从课件提取数学核心，去除噪声 | `tasks/write-notes.md` |
+| 同步通知 | 获取课程作业/公告，生成摘要 | `tasks/sync-notices.md` |
+| 完成作业 | 解析→解答→渲染→询问→提交 | `tasks/do-homework.md` |
+| 撰写笔记 | 从课件提取数学核心 | `tasks/write-notes.md` |
 
-## 工具库
+## Tool Skills
 
-- `tools/pku3b-setup.md` - 教学网工具配置
+- `tools/pku3b-setup.md` - pku3b 配置
 - `tools/data-parser.md` - 数据解析
 - `tools/pdf-reader.md` - PDF读取
 - `tools/agent-helpers.md` - Agent模板
-- `runtime/create-agent.md` - 统一Agent创建
-
-## 执行原则
-
-1. **理解意图** → 根据用户描述判断要做什么
-2. **确认关键信息** → 用 AskUserQuestion 确认课程名、作业选择等
-3. **引用对应 skill** → 调用相应的 task sub-skill
-4. **自动适配环境** → Claude Code / Codex 自动检测
 
 ## 踩坑记录
 
 见 `ignore/archived-skill.md`
-
-关键提示：
-- `pku3b init` 需 expect 脚本交互登录
-- 部分课程用 Canvas/微信群，教学网无记录
