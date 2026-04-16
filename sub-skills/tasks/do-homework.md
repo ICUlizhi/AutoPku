@@ -88,7 +88,37 @@ agent_config = {
 # 由主 skill 创建 agent
 ```
 
-### 4. 渲染
+### 4. 质量检查（写作类作业）
+
+若作业包含字数/词数要求（如 Reflection、Essay、Annotated Bibliography），在定稿前使用脚本精确统计并核对：
+
+```python
+import re
+
+def count_words(text):
+    words = text.split()
+    # 过滤纯标点符号项
+    cleaned = [w for w in words if re.search(r"[a-zA-Z0-9]", w)]
+    return len(words), len(cleaned)
+
+with open("{md_path}", "r", encoding="utf-8") as f:
+    content = f.read()
+
+# 按章节统计示例
+sections = {
+    "Annotated Bibliography": re.search(r"## .*?Annotated Bibliography.*?\n(.*?)(?=\n## )", content, re.DOTALL),
+    "Reflection": re.search(r"## .*?Reflection.*?\n(.*?)(?=\n---\n|\Z)", content, re.DOTALL),
+}
+
+for name, match in sections.items():
+    if match:
+        raw, clean = count_words(match.group(1).strip())
+        print(f"{name}: {clean} words")
+```
+
+发现超字数或不足时，立即调整内容，确保符合要求后再进入渲染。
+
+### 5. 渲染
 
 生成 Markdown，然后转换为 PDF：
 
@@ -115,7 +145,7 @@ PYEOF
     --headless --print-to-pdf="{pdf_path}" "file://{html_path}"
 ```
 
-### 5. 询问用户
+### 6. 询问用户
 
 ```python
 AskUserQuestion({
@@ -129,7 +159,7 @@ AskUserQuestion({
 })
 ```
 
-### 6. 提交
+### 7. 提交
 
 ```bash
 /tmp/pku3b a ls --all-term | grep -i "{course}"
