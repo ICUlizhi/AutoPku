@@ -47,10 +47,10 @@ git clone git@github.com:187370/AutoPku.git
 如果你只是本地试跑，可以直接让 Codex 读取：
 
 ```
-读取 AutoPku/codex/autopku/SKILL.md，并执行
+读取 AutoPku/SKILL.md，并执行
 ```
 
-如果你想把它安装成可复用的 Codex skill，安装路径使用仓库内的 `codex/autopku` 目录即可。
+如果你想把它安装成可复用的 Codex skill，直接安装仓库根目录即可；Codex 入口文件就是根目录的 `SKILL.md`。
 
 ### 第三步：离开电脑，相信 agent
 去拥抱北平难得的春天
@@ -81,7 +81,7 @@ git clone git@github.com:187370/AutoPku.git
 本项目最初基于 Claude Code 的实验性 Agent Team 功能实现。现在仓库同时保留：
 
 - 根目录 `skill.md`：Claude Code 入口
-- `codex/autopku/SKILL.md`：Codex 入口
+- 根目录 `SKILL.md`：Codex 入口
 
 我没有选择自建一套 Agent 系统，而是将全部领域逻辑（教学网登录 via pku3b、PDF 解析策略、LaTeX 渲染管线、教学网提交协议等）内嵌在 skill 文件中。原因是：
 - **由一体化 Agentic RL 训练出的 Claude Code，工具调用被蒸馏回了模型参数，且涌现出了人类炼丹师想不到的pattern, 其内置的能力远优于手工搭建的 Agent 框架**。
@@ -241,5 +241,3 @@ Team: autopku-team
 - 目前兼容的作业类型不够多，后期希望加载更多 skill 例如 pptx 绘制，欢迎提 pr. 
 
 ---
-
-
