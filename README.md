@@ -12,45 +12,20 @@
 ---
 ## 快速开始
 
-本仓库现在同时支持 Claude Code 和 Codex 两种模式。
+### 第一步：把 Skill 扔给 Agentic AI
 
-### 第一步：下载 Skill
-
-```bash
-git clone https://github.com/ICUlizhi/AutoPku.git
+打开 cc / codex / kimi code, 并告诉他：
 ```
-
-如果你是从自己的 fork 使用，也可以：
-
-```bash
-git clone git@github.com:187370/AutoPku.git
+下载 https://github.com/ICUlizhi/AutoPku，并执行这个skill
 ```
-
-### 第二步：选择 Agent 运行模式
-
-#### 方式 A：Claude Code
-
-在 Claude Code 中加载 skill：
+祂会自行下载 pku3b，理解你的工作目录，完成各种配置...
+### 第二步：下达命令
 
 ```
-读取 AutoPku/skill.md，并执行
+"帮我同步这周的通知"
+"写一下操作系统实验班的笔记"
+"量子力学的第五次作业还没做，帮我搞定"
 ```
-
-然后 Claude 会让你告诉它学号和密码：
-
-```
-学号是 2200011111，密码是 xxx
-```
-
-#### 方式 B：Codex
-
-如果你只是本地试跑，可以直接让 Codex 读取：
-
-```
-读取 AutoPku/codex/autopku/SKILL.md，并执行
-```
-
-如果你想把它安装成可复用的 Codex skill，安装路径使用仓库内的 `codex/autopku` 目录即可。
 
 ### 第三步：离开电脑，相信 agent
 去拥抱北平难得的春天
