@@ -13,7 +13,7 @@
 !/codex/**/
 !/codex/**/*
 !/images
-!/archive/
+archive/
 # docs/ 在 main 分支被忽略，文档网站托管在独立的 docs 分支
 docs/
 # 汇总报告（自动生成）
