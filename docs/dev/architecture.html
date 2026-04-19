@@ -95,31 +95,6 @@
 &#9492;&#9472;&#9472; <span class="dir">docs/</span>                 <span class="comment"># 文档站点</span>
         </div>
 
-        <h2>仓库分支策略</h2>
-        <p>本仓库采用双分支策略，将核心代码与展示站点解耦：</p>
-        <table style="width:100%;border-collapse:collapse;margin:var(--space-6) 0;">
-          <thead>
-            <tr style="border-bottom:2px solid var(--border-color);">
-              <th style="text-align:left;padding:var(--space-3) var(--space-4);">分支</th>
-              <th style="text-align:left;padding:var(--space-3) var(--space-4);">用途</th>
-              <th style="text-align:left;padding:var(--space-3) var(--space-4);">说明</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr style="border-bottom:1px solid var(--border-color);">
-              <td style="padding:var(--space-3) var(--space-4);font-family:var(--font-mono);font-size:var(--font-size-sm);"><code>main</code></td>
-              <td style="padding:var(--space-3) var(--space-4);">核心开发</td>
-              <td style="padding:var(--space-3) var(--space-4);">存放 Skill 定义、Sub-skills、工具脚本与项目源码，是 Agentic AI 直接读取的工作分支</td>
-            </tr>
-            <tr>
-              <td style="padding:var(--space-3) var(--space-4);font-family:var(--font-mono);font-size:var(--font-size-sm);"><code>docs</code></td>
-              <td style="padding:var(--space-3) var(--space-4);">文档站点</td>
-              <td style="padding:var(--space-3) var(--space-4);">托管于 GitHub Pages（<a href="https://autopku.com" target="_blank" rel="noopener noreferrer">autopku.com</a>），仅保留静态站点文件，与核心代码完全解耦</td>
-            </tr>
-          </tbody>
-        </table>
-        <p>Contributor 的日常开发应在 <code>main</code> 上切出 feature 分支；<code>docs</code> 分支仅用于站点部署，不承载业务逻辑。</p>
-
         <h2>执行架构</h2>
         <h3>1. 环境检测（_detect.md）</h3>
         <p>系统启动时，通过读取环境变量自动判断当前所在的 AI 运行时：</p>

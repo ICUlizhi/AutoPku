@@ -1,0 +1,82 @@
+%%{init: {'theme': 'base', 'themeVariables': { 'primaryColor': '#D4E6F1', 'primaryTextColor': '#1B4F72', 'primaryBorderColor': '#1B4F72', 'lineColor': '#6C3483', 'secondaryColor': '#D5F5E3', 'tertiaryColor': '#FADBD8', 'fontFamily': 'Helvetica Neue, Arial, sans-serif'}}}%%
+graph TB
+    subgraph Title[""]
+        direction LR
+        T1["<b>Bridging the Final Gap</b><br/><span style='font-size:13px'>打破真实需求与通用 Agent 之间的最后一层 Gap</span>"]
+    end
+
+    subgraph REQ["<b>Real Requirements</b> | 真实需求层"]
+        direction TB
+        R1["长尾场景<br/><span style='font-size:11px; color:#666'>Long-tail Scenarios</span>"]
+        R2["隐性知识<br/><span style='font-size:11px; color:#666'>Implicit Knowledge</span>"]
+        R3["动态约束<br/><span style='font-size:11px; color:#666'>Dynamic Constraints</span>"]
+        R4["多模态输入<br/><span style='font-size:11px; color:#666'>Multi-modal Input</span>"]
+        R5["领域术语<br/><span style='font-size:11px; color:#666'>Domain Terminology</span>"]
+    end
+
+    subgraph GAP["<b>THE GAP</b> | 最后一层 Gap"]
+        direction TB
+        G1["语义鸿沟 | Semantic Gap"]
+        G2["上下文缺失 | Context Missing"]
+        G3["能力边界 | Capability Boundary"]
+        G4["反馈闭环 | Feedback Loop"]
+    end
+
+    subgraph BRIDGE["<b>Bridging Mechanisms</b> | 桥接机制"]
+        direction TB
+        B1["RAG"]
+        B2["Tool Learning"]
+        B3["Prompt Engineering"]
+        B4["Fine-Tuning"]
+    end
+
+    subgraph AGENT["<b>General-Purpose Agent</b> | 通用 Agent"]
+        direction TB
+        A1["大模型基座<br/><span style='font-size:11px; color:#666'>LLM Foundation</span>"]
+        A2["工具调用<br/><span style='font-size:11px; color:#666'>Tool Use</span>"]
+        A3["多轮推理<br/><span style='font-size:11px; color:#666'>Multi-turn Reasoning</span>"]
+        A4["泛化能力<br/><span style='font-size:11px; color:#666'>Generalization</span>"]
+        A5["开放域交互<br/><span style='font-size:11px; color:#666'>Open-domain</span>"]
+    end
+
+    R1 --> B1
+    R2 --> B2
+    R3 --> B3
+    R4 --> B4
+    R5 --> B4
+
+    B1 --> A1
+    B2 --> A2
+    B3 --> A3
+    B4 --> A4
+    B4 --> A5
+
+    style Title fill:#fff,stroke:#fff
+    style REQ fill:#EBF5FB,stroke:#1B4F72,stroke-width:2px
+    style GAP fill:#FADBD8,stroke:#922B21,stroke-width:2px,stroke-dasharray: 5 5
+    style BRIDGE fill:#F5EEF8,stroke:#6C3483,stroke-width:2px
+    style AGENT fill:#EAFAF1,stroke:#1E8449,stroke-width:2px
+
+    style R1 fill:#fff,stroke:#85C1E9
+    style R2 fill:#fff,stroke:#85C1E9
+    style R3 fill:#fff,stroke:#85C1E9
+    style R4 fill:#fff,stroke:#85C1E9
+    style R5 fill:#fff,stroke:#85C1E9
+
+    style A1 fill:#fff,stroke:#82E0AA
+    style A2 fill:#fff,stroke:#82E0AA
+    style A3 fill:#fff,stroke:#82E0AA
+    style A4 fill:#fff,stroke:#82E0AA
+    style A5 fill:#fff,stroke:#82E0AA
+
+    style G1 fill:#fff,stroke:#E74C3C
+    style G2 fill:#fff,stroke:#E74C3C
+    style G3 fill:#fff,stroke:#E74C3C
+    style G4 fill:#fff,stroke:#E74C3C
+
+    style B1 fill:#fff,stroke:#9B59B6
+    style B2 fill:#fff,stroke:#9B59B6
+    style B3 fill:#fff,stroke:#9B59B6
+    style B4 fill:#fff,stroke:#9B59B6
+
+    linkStyle default stroke:#6C3483,stroke-width:2px
