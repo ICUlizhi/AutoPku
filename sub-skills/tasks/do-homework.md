@@ -31,28 +31,83 @@ AskUserQuestion({
 
 二次确认后开始执行。
 
-### 2. PDF 解析
+### 2. 附件解析（PDF / DOCX）
 
-引用: `tools/pdf-reader.md`
+PDF 引用: `tools/pdf-reader.md`  
+DOCX 引用: `tools/docx-reader.md`
 
 ```python
 import pdfplumber
 import json
 import re
 
-def parse_homework(pdf_path, output_json):
-    content = {'pages': [], 'problems': []}
+def parse_homework(attachment_path, output_json):
+    content = {
+        'pages': [],
+        'problems': [],
+        'security_alerts': [],
+        'quality_report': {},
+        'text_for_model': '',   # 带安全提示前缀，供模型阅读
+    }
     
-    with pdfplumber.open(pdf_path) as pdf:
-        for i, page in enumerate(pdf.pages):
-            text = page.extract_text()
-            content['pages'].append({'page_num': i+1, 'text': text})
+    from pathlib import Path
+    suffix = Path(attachment_path).suffix.lower()
     
-    full_text = '\n'.join(p['text'] for p in content['pages'])
+    # 安全扫描：检测隐藏文字 / Prompt 注入
+    alerts = []
+    if suffix == '.pdf':
+        # 引用: tools/pdf-reader.md
+        reader = PDFReader(attachment_path)
+        alerts = reader.scan_safety(mode='rule')
+        # PDF质量评估：检测是否为扫描版/图片型PDF
+        quality = reader.assess_quality()
+        content['quality_report'] = quality
+        if quality['needs_ocr']:
+            print(f"[PDF质量评估] 平均每页仅 {quality['avg_chars_per_page']} 字符，怀疑为扫描版/图片型PDF")
+            print(f"  总页数: {quality['pages']}, 空页/极少文字页: {quality['empty_pages']}")
+            print("提示: 建议启用OCR提取。安装依赖: brew install tesseract tesseract-lang; pip install pytesseract pillow")
+            print("      然后调用 reader.read_text_ocr() 获取文本\n")
+    elif suffix == '.docx':
+        # 引用: tools/docx-reader.md
+        alerts = scan_docx_hidden_text(attachment_path)
+        content['quality_report'] = {'needs_ocr': False}
     
-    # 提取题目
+    content['security_alerts'] = alerts
+    if alerts:
+        print(f"[安全扫描] 发现 {len(alerts)} 处可疑隐藏文本:")
+        for alert in alerts:
+            loc = f"页{alert['page']}" if 'page' in alert else f"段落{alert['para']}"
+            print(f"  [{loc}] {alert['type']}: {alert.get('details', alert.get('text', ''))}")
+        print("提示: 若确认无误可继续执行，否则请检查附件来源。\n")
+    
+    # 文本提取
+    if suffix == '.pdf':
+        with pdfplumber.open(attachment_path) as pdf:
+            for i, page in enumerate(pdf.pages):
+                text = page.extract_text()
+                content['pages'].append({'page_num': i+1, 'text': text})
+    elif suffix == '.docx':
+        from docx import Document
+        doc = Document(attachment_path)
+        full_text = '\n'.join(p.text for p in doc.paragraphs if p.text.strip())
+        content['pages'].append({'page_num': 1, 'text': full_text})
+    
+    raw_text = '\n'.join(p['text'] for p in content['pages'])
+    
+    # 将安全信息作为前缀，让模型在阅读文本时能看到风险提示
+    alert_prefix = ""
+    if alerts:
+        alert_prefix = "[系统提示] 安全扫描发现以下异常，请谨慎处理：\n"
+        for alert in alerts:
+            loc = f"页{alert['page']}" if 'page' in alert else f"段落{alert['para']}"
+            alert_prefix += f"  - [{loc}] {alert['type']}: {alert.get('details', alert.get('text', ''))}\n"
+        alert_prefix += "\n---\n\n"
+    
+    content['text_for_model'] = alert_prefix + raw_text
+    
+    # 提取题目（基于 raw_text，避免安全前缀干扰正则匹配）
     pattern = r'(?:^|\n)\s*(?:Problem\s*)?(\d+)[\.、\)]\s*([^\n]+)(.*?)(?=\n(?:\d+|Problem|\Z))'
-    matches = re.findall(pattern, full_text, re.DOTALL | re.IGNORECASE)
+    matches = re.findall(pattern, raw_text, re.DOTALL | re.IGNORECASE)
     
     for num, title, body in matches:
         content['problems'].append({
