@@ -1,0 +1,29 @@
+{
+  "name": "autopku-dev",
+  "description": "AutoPku marketplace —— 北京大学本科自动化 skill 分发渠道",
+  "owner": {
+    "name": "AutoPku Contributors"
+  },
+  "plugins": [
+    {
+      "name": "autopku",
+      "source": "./",
+      "description": "北京大学本科全自动解决方案 —— 自动同步课程通知、完成作业、撰写笔记",
+      "version": "1.0.0",
+      "author": {
+        "name": "AutoPku Contributors"
+      },
+      "homepage": "https://autopku.com",
+      "repository": "https://github.com/ICUlizhi/AutoPku",
+      "license": "MIT",
+      "category": "education",
+      "keywords": [
+        "pku",
+        "education",
+        "homework",
+        "agent-team",
+        "automation"
+      ]
+    }
+  ]
+}
