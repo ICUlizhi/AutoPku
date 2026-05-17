@@ -5,10 +5,13 @@
 !/.gitignore
 !/LICENSE
 !/README.md
-!/skill.md
-!/sub-skills/
-!/sub-skills/**/
-!/sub-skills/**/*
+!/CHANGELOG.md
+!/.claude-plugin/
+!/.claude-plugin/**/
+!/.claude-plugin/**/*
+!/skills/
+!/skills/**/
+!/skills/**/*
 !/codex/
 !/codex/**/
 !/codex/**/*

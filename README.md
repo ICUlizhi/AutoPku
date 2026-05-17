@@ -27,10 +27,17 @@
 
 ### 第一步：把 Skill 扔给 Agentic AI
 
-打开 cc / codex / kimi code, 并告诉他：
+**Claude Code 用户（推荐，一键安装）**：在 Claude Code 内执行
 ```
-下载 https://github.com/ICUlizhi/AutoPku，并执行这个skill
+/plugin marketplace add ICUlizhi/AutoPku
+/plugin install autopku@autopku-dev
 ```
+
+**Codex / Kimi Code / 其他 Agentic AI**：
+```
+下载 https://github.com/ICUlizhi/AutoPku，并执行 skills/autopku/SKILL.md
+```
+
 祂会自行下载 pku3b，理解你的工作目录，完成各种配置...
 ### 第二步：下达命令
 
@@ -68,7 +75,7 @@
 
 本项目最初基于 Claude Code 的实验性 Agent Team 功能实现。现在仓库同时保留：
 
-- 根目录 `skill.md`：Claude Code 入口
+- `skills/autopku/SKILL.md`：Claude Code 入口（也可通过 `/plugin install autopku@autopku-dev` 一键安装为 plugin）
 - `codex/autopku/SKILL.md`：Codex 入口
 
 我没有选择自建一套 Agent 系统，而是将全部领域逻辑（教学网登录 via pku3b、PDF 解析策略、LaTeX 渲染管线、教学网提交协议等）内嵌在 skill 文件中。原因是：
