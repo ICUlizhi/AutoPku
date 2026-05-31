@@ -211,6 +211,7 @@ chmod +x /tmp/pku3b_login.exp
 | pku3b配置 | `tools/pku3b-setup.md` | 安装、登录、命令参考 |
 | 数据解析 | `tools/data-parser.md` | ANSI颜色码处理、正则提取 |
 | PDF读取 | `tools/pdf-reader.md` | PyMuPDF/pdfplumber 代码示例 |
+| 图片处理 | `tools/image-handler.md` | 论文配图搜索、绘制与LaTeX插入 |
 | Agent模板 | `tools/agent-helpers.md` | Coordinator/Parser/Solver/Writer/Submitter Prompts |
 
 ## Runtime Skills 索引

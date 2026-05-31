@@ -9,7 +9,7 @@ description: 生成PKU课程论文（LaTeX/Word），从大纲到正文到编译
 
 ```
 Phase 1: 获取要求 → Phase 2: 用户确认 → Phase 3: 生成大纲 →
-Phase 4: 生成正文 → Phase 5: 渲染输出 → 询问用户
+Phase 4: 生成正文 → Phase 4.5: 图片获取与绘制 → Phase 5: 渲染输出 → 询问用户
 ```
 
 ## 步骤
@@ -85,6 +85,7 @@ Agent({
 3. 标出每个章节的预估字数分配
 4. 提供5-8条参考文献建议（含作者、书名/文章名、出版社/期刊、年份）
 5. 如果课程是人文社科类，注意理论深度和文献引用；如果是理工类，注意逻辑推导和数据分析
+6. **图片规划**：判断论文是否需要配图（数据图表、框架图、流程图、案例图片），若需要则列出每张图的编号、标题、类型、内容描述和插入位置
 
 输出格式：
 - 使用 Markdown 格式
@@ -127,6 +128,32 @@ for i, section in enumerate(sections):
 
 > **Word 模式**：Agent 生成纯文本/Markdown 格式正文，后续用 python-docx 渲染。
 
+### 4.5 图片获取与绘制（可选）
+
+若大纲中规划了配图，引用 `tools/image-handler.md` 执行：
+
+```python
+# 图片规划结果来自 Phase 3 的大纲 Agent
+images = outline.get("images", [])
+
+if images:
+    for img in images:
+        Agent({
+            "description": f"生成图片 {img['id']}",
+            "prompt": f"""
+引用 skill: autopku-tool-image-handler
+图片类型：{img['type']}  # 数据图表 / 框架图 / 流程图 / 网络图片
+图片标题：{img['title']}
+内容描述：{img['description']}
+输出路径：{course}/论文/figures/{img['id']}.png
+"""
+        })
+```
+
+图片处理完成后，将对应的 LaTeX 插入代码（`\begin{figure}...\end{figure}`）嵌入到各章节正文的对应位置。
+
+> 人文社科类课程论文通常 1-3 张图即可；若论文要求未提及配图，此阶段可跳过。
+
 ### 5. 渲染输出
 
 #### LaTeX 模式
@@ -152,8 +179,9 @@ for i, section in enumerate(sections):
    - `在此填写学号` → 从配置或用户输入获取
    - `在此填写院系` → 从配置或用户输入获取
    - `在此填写摘要内容` → Agent 生成的摘要（200-300字）
-3. **插入正文**：将生成的各章节 LaTeX 代码插入到 `\tableofcontents` 之后、`\section{结论}` 之前
+3. **插入正文**：将生成的各章节 LaTeX 代码（含图片插入代码）插入到 `\tableofcontents` 之后、`\section{结论}` 之前
 4. **插入参考文献**：将大纲中的参考文献转换为 `\section*{参考文献}` 下的列表格式
+5. **图片检查**：确认 `figures/` 目录下所有引用的图片文件存在，且格式为 PNG/JPG/PDF
 5. **保存文件**：`{course}/论文/paper.tex`
 6. **编译 PDF**：
 
@@ -277,6 +305,9 @@ doc.save(f'{course}/论文/paper.docx')
     ├── paper.docx             # Word 文件（仅 Word 模式）
     ├── outline.md             # 论文大纲
     └── figures/               # 图片目录
+        ├── pku.pdf            # 校徽（来自模板）
+        ├── fig1.png           # 生成的配图（若有）
+        └── fig2.png           # 生成的配图（若有）
 ```
 
 渲染完成后询问用户：
@@ -293,6 +324,9 @@ doc.save(f'{course}/论文/paper.docx')
 | 中文字体显示异常 | Latin Modern 不支持中文 | 使用 `ctexart` + xelatex，已内置中文字体配置 |
 | LaTeX 特殊字符报错 | `% $ & # _ { } ~ ^ \` 未转义 | Agent 生成内容时避免裸特殊字符，或用 `\verb` 包裹 |
 | 图片路径错误 | `figures/` 相对路径不对 | 确保编译工作目录与 tex 文件同级，且 `figures/` 存在 |
+| 图片未显示 | 使用了不支持的格式 | 转换为 PNG 或 PDF 格式 |
+| matplotlib 中文乱码 | 系统字体缺失 | 尝试 `Arial Unicode MS`、`SimHei`、`PingFang SC` |
+| graphviz 未安装 | 无 `dot` 命令 | `brew install graphviz` 或退化为 matplotlib 绘制 |
 | 目录未生成 | 只编译了一次 xelatex | 需编译两次以生成 `toc` 文件 |
 | Word 中公式显示差 | python-docx 不支持 LaTeX 公式 | 简单公式用纯文本，复杂公式建议用 LaTeX 模式 |
 
