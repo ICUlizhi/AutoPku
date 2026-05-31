@@ -1,0 +1,138 @@
+% !TEX program = xelatex
+\documentclass[hyperref,a4paper,UTF8]{ctexart}
+
+\usepackage[left=2.50cm, right=2.50cm, top=2.50cm, bottom=2.50cm]{geometry}
+
+\usepackage[unicode=true,colorlinks,urlcolor=blue,linkcolor=blue,bookmarksnumbered=true]{hyperref}
+\usepackage{latexsym,amssymb,amsmath,amsbsy,amsopn,amstext,amsthm,amsxtra,color,bm,calc,ifpdf}
+\usepackage{graphicx}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{listings}
+\usepackage{multirow}
+\usepackage{makeidx}
+\usepackage{xcolor}
+\usepackage{fontspec}
+\usepackage{subfigure}
+\usepackage{hyperref}
+\usepackage{pythonhighlight}
+
+\pagestyle{fancy}
+\fancyhead[L]{}
+\fancyhead[C]{\fangsong 在此填写页眉（可以是论文题目）}
+\fancyhead[R]{}
+
+\renewcommand{\abstractname}{\textbf{\large {摘\quad 要}}} % 更改摘要二字的样式
+
+
+\title{\textbf{{在此填写题目}}}
+\author{
+\kaishu\normalsize
+姓名\ \underline{在此填写姓名} \qquad
+学号\ \underline{在此填写学号} \qquad
+院系\ \underline{在此填写院系}
+}
+\date{} % 留空，不显示日期
+
+
+\begin{document}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.65\textwidth]{figures/pku.pdf}
+\end{figure}
+
+\maketitle
+
+\begin{abstract}
+
+在此填写摘要内容
+
+\end{abstract}
+
+\
+
+\tableofcontents
+
+\thispagestyle{empty} % 当前页不显示页码
+\newpage
+
+
+\section{引言}
+
+在此填写引言
+
+\
+
+\section{第2章标题}
+
+以下是一些样例：
+
+\textbf{加粗文本}
+
+\textit{倾斜文本}
+
+\underline{下划线文本}
+
+项目编号：
+
+\begin{itemize}
+    \item XXX
+    \item XXX
+    \item XXX
+\end{itemize}
+
+\begin{enumerate}
+    \item XXX
+    \item XXX
+    \item XXX
+\end{enumerate}
+
+行内公式：$\int_a^b f(x)dx = F(b)-F(a)$
+
+另起一行的公式：
+\begin{equation}
+    \int_a^b f(x)dx = F(b)-F(a)
+\end{equation}
+
+插入图片：（[scale=] 中的数可以控制图片大小；后面的括号表示图片的路径，请把图片上传到figures文件夹中；caption表示图片的标题）
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[scale=0.9]{figures/example.png}
+	\caption{在此填写图片的标题}
+\end{figure}
+
+插入表格：
+\begin{tabular}{|c|c|}% 通过添加 | 来表示是否需要绘制竖线
+\hline  % 在表格最上方绘制横线
+(1,1)&(1,2)\\
+\hline  %在第一行和第二行之间绘制横线
+(2,1)&(2,2)\\
+\hline % 在表格最下方绘制横线
+\end{tabular}
+
+\subsection{小节}
+
+在此填写小节内容
+
+\subsubsection{小小节}
+
+在此填写小小节内容
+
+\
+
+\section{结论}
+
+在此填写结论
+
+\
+
+\
+
+\section*{参考文献}
+
+在此填写参考文献
+
+
+\end{document}

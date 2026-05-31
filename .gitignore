@@ -22,3 +22,6 @@ docs/
 # OS
 .DS_Store
 Thumbs.db
+!/pkucourse_paper_template/
+!/pkucourse_paper_template/*
+!/pkucourse_paper_template/**/*
