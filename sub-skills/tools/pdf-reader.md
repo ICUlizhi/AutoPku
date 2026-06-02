@@ -1,3 +1,8 @@
+---
+name: autopku-tool-pdf-reader
+description: PyMuPDF/pdfplumber 读取PDF，支持中文、表格提取、图片提取、安全扫描
+---
+
 # PDF Reader Skill
 
 读取PDF文件的Python工具方法，支持中文，提供两种方案：高性能模式(PyMuPDF)和表格提取模式(pdfplumber)。
