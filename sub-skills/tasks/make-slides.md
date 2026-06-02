@@ -15,104 +15,117 @@ Phase 4: Agent Team 并行生成各页 → Phase 4.5: 图片获取（可选）�
 Phase 5: 组装与渲染 → Phase 6: 用户确认
 ```
 
-## Phase 1: 数据源检测与用户确认
+## Phase 1: 自然语言意图解析与信息确认
 
-### 1.1 自动检测可用数据源
+用户用自然语言描述需求，不需要记忆任何命令格式。例如：
 
-扫描课程目录下的潜在内容源：
+- *"帮我给学术英语写作做个关于多智能体和单智能体 LLM 对比的汇报 PPT，用我之前的文献笔记"*
+- *"操作系统课程要做一个文件系统的展示，15 页左右，要有图"*
+- *"给我做个答辩 slides，基于我的毕业论文"*
+- *"PechaKucha 风格，20 页，基于这三篇文献"*
+
+### 1.1 自然语言意图解析
+
+从用户的任意输入中提取关键参数：
+
+```python
+Agent({
+    "description": "解析用户生成幻灯片的意图",
+    "prompt": """
+从用户的以下输入中提取生成幻灯片所需的关键信息。
+
+用户输入："{user_input}"
+
+可用课程目录（扫描本地得到）：
+{course_list}
+
+请提取以下字段（JSON 格式），如果某字段用户未提及则设为 null：
+{{
+  "course": "课程名称（从可用课程中匹配，或用户明确指定的）",
+  "title": "幻灯片主题/标题",
+  "data_source_hint": "用户提到的数据源线索，如'文献笔记''课件''论文''手动输入'等",
+  "page_count_hint": "页数线索，如'精简''标准''详细''15页''20页'等",
+  "extra_requirements": ["用户提到的额外需求，如'配图''参考文献''动画'等"],
+  "style_hint": "风格线索，如'PechaKucha''答辩''汇报'等"
+}}
+
+匹配规则：
+- 课程名优先从本地目录模糊匹配，如"学术英语"→"学术英语写作"
+- 如果用户未指定课程但提到了具体主题，course 设为 null
+- 如果用户只说"做个 PPT"没有任何细节，所有字段都可能是 null
+
+只返回 JSON，不要解释。
+"""
+})
+```
+
+### 1.2 自动检测数据源
+
+确定课程目录后，扫描可用内容源：
 
 ```python
 import os
 from pathlib import Path
 
-course_dir = Path("{course}")
+course_dir = Path(extracted_course)
 data_sources = []
 
-# 检测课件
-lectures_dir = course_dir / "lectures"
-if lectures_dir.exists():
-    pdfs = list(lectures_dir.glob("*.pdf"))
-    if pdfs:
-        data_sources.append({"type": "lectures", "path": str(lectures_dir), "count": len(pdfs)})
-
-# 检测已有笔记
-notes_dir = course_dir / "notes"
-if notes_dir.exists():
-    mds = list(notes_dir.glob("*.md"))
-    if mds:
-        data_sources.append({"type": "notes", "path": str(notes_dir), "count": len(mds)})
-
-# 检测已有论文
-paper_dir = course_dir / "论文"
-if paper_dir.exists():
-    tex_or_pdf = list(paper_dir.glob("*.tex")) + list(paper_dir.glob("*.pdf"))
-    if tex_or_pdf:
-        data_sources.append({"type": "paper", "path": str(paper_dir), "count": len(tex_or_pdf)})
+for dir_name, type_name in [("lectures", "lectures"), ("notes", "notes"), ("论文", "paper")]:
+    d = course_dir / dir_name
+    if d.exists():
+        files = list(d.glob("*.pdf")) + list(d.glob("*.md")) + list(d.glob("*.tex"))
+        if files:
+            data_sources.append({"type": type_name, "path": str(d), "count": len(files)})
 ```
 
-### 1.2 AskUserQuestion 确认参数
+### 1.3 信息补全策略
+
+根据解析结果决定交互方式：
+
+```
+如果 course 为 null → 追问："你想为哪个课程生成幻灯片？"
+如果 title 为 null → 追问："幻灯片的主题是什么？"
+如果 data_source_hint 为 null 且 data_sources 有多个 → 追问数据源选择
+如果 page_count_hint 为 null → 使用默认值 "standard"
+如果 author 未知 → 追问作者信息
+```
+
+**目标：最大限度减少不必要的交互。** 如果用户一句话里已经说清楚了所有关键信息，直接跳到 Phase 2，只在最后给用户一个摘要确认：
+
+> "好的，我将为 **学术英语写作** 生成一个关于 **Multi-Agent vs. Single-Agent LLMs** 的汇报幻灯片，基于你的 **3 篇文献笔记**，约 **15-20 页**，包含 **参考文献页**。作者信息使用配置中的 **Xu Jing / Peking University**。确认开始生成吗？"
+
+只有在信息缺失时才展开 AskUserQuestion：
 
 ```python
-# 构建数据源选项
-source_options = [{"label": "手动输入主题", "value": "manual"}]
-for src in data_sources:
-    label_map = {
-        "lectures": f"课件 PDF（{src['count']} 个）",
-        "notes": f"已有笔记（{src['count']} 个 md）",
-        "paper": f"已有论文（{src['count']} 个文件）",
-    }
-    source_options.append({"label": label_map.get(src["type"], src["type"]), "value": src["type"]})
-
-AskUserQuestion({
-    "questions": [
-        {
-            "question": "幻灯片汇报主题：",
-            "options": [
-                {"label": f"使用课程名：{course} 课程汇报", "value": f"{course} 课程汇报"},
-                {"label": "手动输入", "value": "custom"}
-            ]
-        },
-        {
+# 示例：缺失数据源时的最小化追问
+if not extracted.get("data_source") and len(data_sources) > 1:
+    AskUserQuestion({
+        "questions": [{
             "question": "选择内容来源：",
-            "options": source_options
-        },
-        {
-            "question": "目标页数：",
             "options": [
-                {"label": "精简（8-12页）", "value": "short"},
-                {"label": "标准（15-20页）", "value": "standard"},
-                {"label": "详细（25-30页）", "value": "long"}
-            ]
-        },
-        {
-            "question": "额外需求（多选）：",
-            "options": [
-                {"label": "添加配图（自动搜索/生成）", "value": "images"},
-                {"label": "包含参考文献页", "value": "references"},
-                {"label": "添加动画效果（pause/uncover）", "value": "animation"}
-            ],
-            "multi_select": True
-        }
-    ]
-})
+                {"label": f"已有笔记（{src['count']} 个）", "value": src["type"]}
+                for src in data_sources
+            ] + [{"label": "手动输入主题", "value": "manual"}]
+        }]
+    })
 ```
 
-若用户选择"手动输入主题"，继续追问获取具体主题和简要内容描述。
+### 1.4 收集作者信息
 
-### 1.3 收集作者信息
+优先从本地配置读取（`~/.autopku/config.md` 或环境变量），失败时追问：
 
 ```python
-AskUserQuestion({
-    "questions": [
-        {
-            "question": "确认作者信息：",
-            "options": [
-                {"label": "从配置读取（如可用）", "value": "config"},
-                {"label": "手动输入", "value": "manual"}
-            ]
-        }
-    ]
-})
+# 尝试读取配置
+author = config.get("student_name", "")
+institution = config.get("institution", "Peking University")
+
+if not author:
+    AskUserQuestion({
+        "questions": [{
+            "question": "作者姓名：",
+            "options": [{"label": "手动输入", "value": "manual"}]
+        }]
+    })
 ```
 
 ## Phase 2: 内容提取
@@ -409,7 +422,11 @@ for i, section in enumerate(sections):
 4. 中文内容直接写，不需要额外转义
 5. 图片路径统一使用 `"figures/xxx.png"` 格式（图片后续会放到该目录）
 6. 如果某页需要配图但图片尚未生成，先写占位路径 `"figures/placeholder.png"`
-7. 不要输出任何解释文字，只输出 typst 代码
+7. **不得引用模板内部变量**（如 `palette`、`subject-slide`、`soft-card` 等），pages_code 中仅允许使用：
+   - 已 import 的页面函数（`cover-page`、`subject-content-page` 等）
+   - 标准 Typst 语法（`#text`、`#image`、`#figure` 等）
+   - 主文件定义的变量（`report-title`、`report-author`、`demo-image` 等）
+8. 不要输出任何解释文字，只输出 typst 代码
 
 ## 动画（如用户选择了 animation）
 
@@ -556,20 +573,25 @@ AskUserQuestion({
 | 编译后页数与目标差距大 | 大纲规划或 Agent 生成阶段未控制 | 在大纲 Agent prompt 中明确目标页数约束 |
 | 模板更新后接口变化 | pkusli 仓库更新了函数签名 | slide-renderer 中 `git pull` 会自动获取最新模板；如接口变更需更新 skill |
 | typst 首次编译下载 Touying 包慢 | 需要从 Typst Universe 下载依赖 | 正常现象，约 10-30 秒；缓存后后续编译快 |
+| Agent 引用模板内部变量 | Agent 在 content 中使用了 `palette.primary` 等内部变量 | Phase 4 prompt 中明确约束：pages_code 不得引用模板内部变量，仅使用已 import 的页面函数和标准 Typst 语法 |
 
 ## 与现有 Task 的协作
 
 | 场景 | 使用方式 |
 |------|---------|
-| 从课件生成汇报 slides | `skill: autopku slides {course}` 或 "给{course}做个汇报PPT" |
-| 基于已有笔记生成 slides | 先执行 `write-notes`，再执行 `make-slides`，数据源选"已有笔记" |
-| 基于论文生成答辩 slides | 先执行 `write-paper`，再执行 `make-slides`，数据源选"已有论文" |
-| 纯手动主题 | 数据源选"手动输入"，Agent 会基于通用知识生成 |
+| 从课件生成汇报 slides | "给{course}做个汇报PPT，用课件内容" |
+| 基于已有笔记生成 slides | "给{course}生成 slides，基于我之前整理的笔记" |
+| 基于论文生成答辩 slides | "帮我做个答辩 PPT，基于我的毕业论文" |
+| 纯手动主题 | "做个关于 XX 主题的学术汇报幻灯片" |
 
-## 使用示例
+## 使用示例（自然语言）
 
-```bash
-skill: autopku slides 逻辑导论
-skill: autopku 给学术英语写作做个汇报PPT
-skill: autopku make-slides 马原
-```
+用户可以直接用自然语言描述需求，不需要记忆任何命令格式：
+
+- *"帮我给学术英语写作做个关于多智能体和单智能体 LLM 对比的汇报 PPT，用我之前的文献笔记，大概 15 页，要包含参考文献"*
+- *"操作系统课程要展示文件系统，15 页左右，要有架构图"*
+- *"基于我的毕业论文生成答辩 slides，20 页"*
+- *"PechaKucha 风格，20 页，基于这三篇文献笔记"*
+- *"给马原课做个期末汇报 PPT"*（信息不完整时会追问）
+
+> **设计原则**：用户说什么，系统就理解什么。只有在信息确实缺失时才追问，能猜到的尽量自己决定。
