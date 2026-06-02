@@ -11,6 +11,9 @@
 | 3 | [笔记 PDF 重复渲染](case_03_notes_duplicate_rendering.md) | `5f918769...` | `write-notes` | 110页重复内容、幂等性 |
 | 4 | [Kimi Agent Team 支持](case_04_kimi_runtime_support.md) | `5f918769...` | `runtime` | 跨平台 Agent 创建语法差异 |
 | 5 | [论文图片功能缺失](case_05_paper_images_missing.md) | `4041a8d...` | `write-paper` | 图片搜索/绘制未触发 |
+| 6 | [操作系统笔记渲染踩坑](case_06_os_notes_rendering.md) | `33e4e429...` | `write-notes` | 9种渲染方式尝试、Callout修复、Unicode符号缺失 |
+| 7 | [作业误提交恢复](case_07_homework_submit_mistake.md) | `6aa59549...` | `do-homework` | pku3b学期限制、Lab3误交Lab2、备注恢复 |
+| 8 | [Markdown列表渲染失效](case_08_markdown_list_rendering.md) | `a1fd3f41...` | `write-notes` | pandoc段落-列表空行规则、批量修复 |
 
 ## 数据来源
 
