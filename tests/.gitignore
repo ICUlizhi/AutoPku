@@ -1,0 +1,52 @@
+# AutoPku Test Suite - 忽略测试生成的运行时文件
+# 核心框架文件（README.md, setup.sh, run.sh, validate.py, conftest.py, run_all.py）保留
+
+# 测试运行报告
+/_report.json
+
+# 测试运行时生成的数据目录（setup.sh 动态创建）
+*/test_*/test00/
+*/test_*/fixtures/
+*/test_*/output/
+*/test_*/input/
+*/test_*/notes/
+
+# touying-ethan 模板（测试时自动 git clone 到工作目录）
+*/test_*/slides/
+
+# LaTeX 编译中间产物
+*.aux
+*.toc
+*.out
+*.synctex.gz
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# macOS
+.DS_Store
+
+# 各测试用例运行时根目录下的产物（由 setup.sh 生成）
+*/test_01_pdf_parse/homework_mock.pdf
+*/test_02_wordcount/essay.md
+*/test_02_wordcount/wordcount_result.json
+*/test_03_docx_security/suspicious.docx
+*/test_03_docx_security/docx_scan_report.json
+*/test_04_render_pdf/answer.md
+*/test_04_render_pdf/answer.pdf
+*/test_05_submit_confirm/confirm_prompt.md
+*/test_01_latex/paper.tex
+*/test_01_latex/paper.pdf
+*/test_02_word/paper.docx
+*/test_03_images/paper.tex
+*/test_04_template/template.tex
+*/test_04_template/paper.tex
+*/test_01_basic/lecture_mock.pdf
+*/test_02_font/note.md
+*/test_02_font/output/
+*/test_03_callout/note_with_callout.md
+*/test_04_formula/note_with_formula.md
+*/test_05_idempotent/note_source.md
+*/test_05_idempotent/output/

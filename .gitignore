@@ -12,6 +12,9 @@
 !/codex/
 !/codex/**/
 !/codex/**/*
+!/tests/
+!/tests/**/
+!/tests/**/*
 !/images
 archive/
 # docs/ 在 main 分支被忽略，文档网站托管在独立的 docs 分支
