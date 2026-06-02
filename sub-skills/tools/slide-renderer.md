@@ -1,11 +1,11 @@
 ---
 name: autopku-tool-slide-renderer
-description: 基于 touying-ethan 模板生成 Typst 幻灯片并编译为 PDF
+description: 基于 pkusli 模板生成 Typst 幻灯片并编译为 PDF
 ---
 
 # 工具：幻灯片渲染器
 
-负责获取 touying-ethan 模板、组装 `main.typ`、编译输出 PDF。供 `make-slides` 任务 skill 在 Phase 5 调用。
+负责获取 pkusli 模板、组装 `main.typ`、编译输出 PDF。供 `make-slides` 任务 skill 在 Phase 5 调用。
 
 ## 依赖
 
@@ -18,16 +18,16 @@ description: 基于 touying-ethan 模板生成 Typst 幻灯片并编译为 PDF
 使用缓存机制，避免每次重复 clone：
 
 ```bash
-TEMPLATE_DIR="$HOME/.autopku/templates/touying-ethan"
+TEMPLATE_DIR="$HOME/.autopku/templates/pkusli"
 COURSE_SLIDES_DIR="{course}/slides"
 
 # 1. 确保模板缓存存在且最新
 if [ ! -d "$TEMPLATE_DIR/.git" ]; then
-    echo "首次下载 touying-ethan 模板..."
+    echo "首次下载 pkusli 模板..."
     mkdir -p "$HOME/.autopku/templates"
-    git clone --depth 1 https://github.com/hanlife02/touying-ethan.git "$TEMPLATE_DIR"
+    git clone --depth 1 https://github.com/hanlife02/pkusli.git "$TEMPLATE_DIR"
 else
-    echo "更新 touying-ethan 模板..."
+    echo "更新 pkusli 模板..."
     cd "$TEMPLATE_DIR" && git pull --depth 1
 fi
 
