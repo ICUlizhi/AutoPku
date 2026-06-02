@@ -343,10 +343,11 @@ doc.save(f'{course}/论文/paper.docx')
 | Word 中公式显示差 | python-docx 不支持 LaTeX 公式 | 简单公式用纯文本，复杂公式建议用 LaTeX 模式 |
 | Word 文档属性暴露生成方式 | python-docx 默认作者为 "python-docx" | 生成后修改 core_properties，将 author 设为学生姓名 |
 
-## 使用示例
+## 使用示例（自然语言）
 
-```bash
-skill: autopku write-paper 马原
-skill: autopku 写论文 学术英语写作
-skill: autopku paper 逻辑导论
-```
+用户可以直接用自然语言描述需求：
+
+- *"帮我写马原的课程论文，关于马克思主义劳动价值论与数字劳动的关系"*
+- *"学术英语写作的论文要交了，帮我生成一份基于之前文献笔记的 Word 文档"*
+- *"给逻辑导论课写个期末论文，5000 字左右，用 LaTeX 格式"*
+- *"把我这三篇文献阅读笔记整理成一篇正式的学术论文"*

@@ -250,17 +250,15 @@ stat -f%z slides.pdf
 
 ## 使用示例
 
-```bash
-# 在 make-slides 流程中自动调用
-skill: autopku slide-renderer
+本工具由 `make-slides` 任务在 Phase 5 自动调用，**用户不需要直接触发**。
 
-# 参数示例
-# title="多模态评测框架设计"
-# author="张三"
-# institution="北京大学"
-# date="2026-06-02"
-# pages_code="...Agent 生成的 typst 页面代码..."
-```
+如需手动调用，提供以下参数即可：
+
+- `title`: 汇报标题
+- `author`: 作者姓名
+- `institution`: 单位/院系
+- `date`: 日期
+- `pages_code`: Agent 生成的 typst 页面代码
 
 ## 模板结构说明
 

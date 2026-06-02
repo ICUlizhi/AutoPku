@@ -109,7 +109,7 @@ sub-skills/
 **Commit:** `b118918`
 
 - 新增 `sub-skills/tasks/write-notes.md`
-- 支持 `autopku notes <course>` 自然语言指令
+- 支持自然语言指令生成笔记（如 *"给逻辑导论写笔记"*）
 - 聚焦数学核心内容：定义、定理、证明
 - 去除噪声：历史背景、故事轶事、无关例子
 - 生成带 LaTeX 公式和索引的 Markdown 笔记

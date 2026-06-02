@@ -467,14 +467,11 @@ graph TD
 
 各讲内容通过 pandoc 多文件输入自动追加在 README 之后，目录自动生成。
 
-## 使用示例
+## 使用示例（自然语言）
 
-```bash
-skill: autopku notes 逻辑导论
-```
+用户可以直接用自然语言描述需求：
 
-或在其他目录使用：
-
-```bash
-skill: autopku notes /path/to/lectures /path/to/notes
-```
+- *"帮我整理逻辑导论的课件笔记，输出成 Markdown"*
+- *"把这些 PDF 课件转成结构化的学习笔记，放到 notes 目录"*
+- *"整理操作系统实验课的课件，重点保留代码示例和实验步骤"*
+- *"把 lectures/ 下的所有课件转换成笔记，输出到 notes/"*
