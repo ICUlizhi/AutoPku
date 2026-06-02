@@ -1,103 +1,39 @@
-# AutoPku Test Suite
+# AutoPku 真实案例集
 
-AutoPku 功能回归测试框架。每个测试用例采用类似 OJ（Online Judge）题目的格式组织，包含题目描述、前置条件、输入数据、期望输出和验证脚本。
+从本地 Kimi Sessions 中提取的真实使用案例，每个案例包含用户原始输入、Agent 执行过程、踩坑分析与修复记录。
 
-## 设计理念
+## 数据来源
 
-AutoPku 是 **AI-Native** 系统——核心执行逻辑由 AI Agent 在读取 skill 文档后自行完成。因此本测试框架采用**半自动化**策略：
+- `~/.kimi/user-history/*.jsonl` — 用户输入历史
+- `~/.kimi/sessions/<session_id>/<turn_id>/wire.jsonl` — 完整对话记录（含 Agent 思考、工具调用）
+- `~/.kimi/sessions/<session_id>/<turn_id>/context.jsonl` — 上下文消息
 
-- **机器负责**：环境准备、数据构造、输出验证
-- **AI Agent 负责**：按测试步骤执行 skill 逻辑（模拟真实用户交互）
+## 案例列表
 
-## 目录结构
+| # | 案例 | 来源 Session | 涉及功能 | 核心问题 |
+|---|------|-------------|---------|---------|
+| 1 | [马原论文 PDF → Word 转换](cases/case_01_marxism_paper_pdf_to_word.md) | `5f918769...` | `write-paper` | PDF 文本提取、Word 格式化、中文字体 |
+| 2 | [笔记 Callout 文本丢失](cases/case_02_notes_callout_missing.md) | `33e4e429...` | `write-notes` | Callout 正文被吞、lua filter 修复 |
+| 3 | [笔记 PDF 重复渲染](cases/case_03_notes_duplicate_rendering.md) | `5f918769...` | `write-notes` | 110页重复内容、幂等性 |
+| 4 | [Kimi Agent Team 支持](cases/case_04_kimi_runtime_support.md) | `5f918769...` | `runtime` | 跨平台 Agent 创建语法差异 |
+| 5 | [论文图片功能缺失](cases/case_05_paper_images_missing.md) | `4041a8d...` | `write-paper` | 图片搜索/绘制未触发 |
 
-```
-tests/
-├── README.md              # 本文件
-├── conftest.py            # 公共工具函数
-├── run_all.py             # 一键运行所有测试
-├── sync-notices/          # 同步通知测试
-├── do-homework/           # 完成作业测试
-├── write-notes/           # 撰写笔记测试
-├── write-paper/           # 撰写论文测试
-└── make-slides/           # 生成幻灯片测试
-```
+## 案例格式
 
-## 测试用例格式
+每个案例文件包含：
+1. **用户原始输入** — 真实触发问题的用户意图
+2. **Agent 思考过程** — 从 `wire.jsonl` 中提取的 thinking 内容
+3. **关键工具调用序列** — 实际执行的 Shell/ReadFile/WriteFile 等工具
+4. **问题根因** — 为什么出现了问题
+5. **修复过程** — 如何修复（如已修复）
+6. **测试价值** — 可用于验证什么功能点
 
-每个测试用例是一个独立目录，内部结构如下：
-
-```
-test_XX_名称/
-├── README.md          # 题目描述（场景、前置条件、输入、期望输出）
-├── setup.sh           # 环境准备（创建 mock 数据、目录结构）
-├── run.sh             # 执行步骤（供 AI Agent 按步骤执行）
-├── validate.py        # 输出验证（检查文件、内容、格式）
-└── fixtures/          # 测试数据（PDF、mock ANSI 输出等）
-```
-
-### README.md 模板
-
-```markdown
-# 测试：XXX
-
-## 场景描述
-...
-
-## 前置条件
-- ...
-
-## 输入
-- 用户意图："..."
-- 测试数据：fixtures/xxx.pdf
-
-## 期望输出
-1. 文件结构：...
-2. 内容检查：...
-3. 边界条件：...
-
-## 验证命令
-```bash
-python validate.py
-```
-```
-
-## 运行方式
-
-### 单个测试
+## 如何提取新案例
 
 ```bash
-cd tests/write-notes/test_01_basic
-bash setup.sh
-# 按 run.sh 中的步骤，让 AI Agent 执行 skill
-python validate.py
+# 查看 user-history 中 AutoPku 相关的消息
+grep -i "autopku\|skill\|pku3b\|写笔记\|写论文\|做作业\|同步通知" ~/.kimi/user-history/*.jsonl
+
+# 查看 session 中的详细对话
+head -100 ~/.kimi/sessions/<session_id>/<turn_id>/wire.jsonl
 ```
-
-### 全部测试
-
-```bash
-cd tests
-python run_all.py
-```
-
-## 测试分类
-
-| 功能模块 | 测试数量 | 核心场景 |
-|---------|---------|---------|
-| sync-notices | 3 | 单课程同步、多课程并行、空数据 |
-| do-homework | 5 | PDF解析、字数统计、DOCX安全、渲染PDF、提交确认 |
-| write-notes | 5 | PDF→笔记、Callout包含、公式渲染、字体、多文件合并 |
-| write-paper | 4 | LaTeX/Word双模式、图片绘制、参考文献、模板替换 |
-| make-slides | 3 | 课件→幻灯片、模板编译、中文渲染 |
-
-## 从 Kimi Session 提取的踩坑场景
-
-以下场景直接来自真实使用中的问题，已转化为测试用例：
-
-1. **笔记 Callout 丢失** → `write-notes/test_03_callout`
-2. **笔记 PDF 重复渲染**（110页被渲染两次）→ `write-notes/test_05_idempotent`
-3. **模态逻辑公式渲染错误**（xRy 符号）→ `write-notes/test_04_formula`
-4. **宋体字体渲染异常** → `write-notes/test_02_font`
-5. **论文字数统计不准确** → `do-homework/test_02_wordcount`
-6. **DOCX 隐藏文字未扫描** → `do-homework/test_03_docx_security`
-7. **论文图片搜索缺失** → `write-paper/test_03_images`
