@@ -1,11 +1,11 @@
 ---
 name: autopku-task-make-slides
-description: 基于 touying-ethan 模板自动生成课程汇报/展示幻灯片（Typst PDF）
+description: 基于 pkusli 模板自动生成课程汇报/展示幻灯片（Typst PDF）
 ---
 
 # 任务：生成幻灯片
 
-基于 [touying-ethan](https://github.com/hanlife02/touying-ethan)（Typst + Touying 中文汇报模板）自动生成学术汇报幻灯片。
+基于 [pkusli](https://github.com/hanlife02/pkusli)（Typst + Touying 中文汇报模板）自动生成学术汇报幻灯片。
 
 ## 流程
 
@@ -289,7 +289,7 @@ for i, section in enumerate(sections):
     agent_configs.append({
         "name": f"{course}-slides-section-{i}",
         "task": f"""
-你是幻灯片内容生成专家。请为以下章节生成 touying-ethan 模板的 Typst 页面调用代码。
+你是幻灯片内容生成专家。请为以下章节生成 pkusli 模板的 Typst 页面调用代码。
 
 汇报主题：{title}
 当前章节：{section['title']}
@@ -498,7 +498,7 @@ Agent({
 {pages_code}
 
 执行步骤：
-1. 获取 touying-ethan 模板（git clone 缓存）
+1. 获取 pkusli 模板（git clone 缓存）
 2. 复制到 {course}/slides/
 3. 确保 figures/ 目录存在，将已生成的图片复制到 {course}/slides/figures/
 4. 组装 main.typ
@@ -554,7 +554,7 @@ AskUserQuestion({
 | 内容过多导致一页放不下 | Agent 没有控制内容量 | 在 prompt 中强调每页 3-5 个要点，超出则拆分为多页 |
 | 中文标点显示异常 | 使用了全角标点但字体 fallback 不完整 | 通常不影响；若有问题可统一使用半角标点 |
 | 编译后页数与目标差距大 | 大纲规划或 Agent 生成阶段未控制 | 在大纲 Agent prompt 中明确目标页数约束 |
-| 模板更新后接口变化 | touying-ethan 仓库更新了函数签名 | slide-renderer 中 `git pull` 会自动获取最新模板；如接口变更需更新 skill |
+| 模板更新后接口变化 | pkusli 仓库更新了函数签名 | slide-renderer 中 `git pull` 会自动获取最新模板；如接口变更需更新 skill |
 | typst 首次编译下载 Touying 包慢 | 需要从 Typst Universe 下载依赖 | 正常现象，约 10-30 秒；缓存后后续编译快 |
 
 ## 与现有 Task 的协作

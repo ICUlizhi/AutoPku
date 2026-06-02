@@ -232,7 +232,7 @@ echo "" > /tmp/pku3b_login.exp
 | 完成作业 | `tasks/do-homework.md` | 解析PDF→解答→渲染→询问用户→提交 |
 | 撰写笔记 | `tasks/write-notes.md` | 从课件提取数学核心，去除噪声 |
 | 撰写论文 | `tasks/write-paper.md` | 从大纲到正文到编译，支持LaTeX/Word双模式 |
-| 生成幻灯片 | `tasks/make-slides.md` | 基于touying-ethan模板生成Typst汇报幻灯片 |
+| 生成幻灯片 | `tasks/make-slides.md` | 基于pkusli模板生成Typst汇报幻灯片 |
 
 ## Tool Skills 索引
 
@@ -243,7 +243,7 @@ echo "" > /tmp/pku3b_login.exp
 | PDF读取 | `tools/pdf-reader.md` | PyMuPDF/pdfplumber 代码示例 |
 | 图片处理 | `tools/image-handler.md` | 论文配图搜索、绘制与LaTeX插入 |
 | Agent模板 | `tools/agent-helpers.md` | Coordinator/Parser/Solver/Writer/Submitter Prompts |
-| 幻灯片渲染 | `tools/slide-renderer.md` | touying-ethan模板获取、main.typ组装、typst编译 |
+| 幻灯片渲染 | `tools/slide-renderer.md` | pkusli模板获取、main.typ组装、typst编译 |
 
 ## Runtime Skills 索引
 
