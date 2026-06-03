@@ -13,20 +13,26 @@ which pku3b 2>/dev/null || echo "NOT_FOUND"
 
 ## 安装
 
+### 推荐版本
+
+**重要**: 使用 **v0.14.0+** 以避免 TLS 握手错误。v0.11.0 存在已知的连接问题。
+
 ### macOS Apple Silicon
 ```bash
 cd /tmp
-curl -LO "https://github.com/sshwy/pku3b/releases/download/0.11.0/pku3b-0.11.0-aarch64-apple-darwin.tar.gz"
-tar -xzf pku3b-0.11.0-aarch64-apple-darwin.tar.gz
-chmod +x pku3b-0.11.0-aarch64-apple-darwin/pku3b
-ln -sf pku3b-0.11.0-aarch64-apple-darwin/pku3b pku3b
-./pku3b --version
+curl -LO "https://github.com/sshwy/pku3b/releases/download/0.14.0/pku3b-0.14.0-aarch64-apple-darwin.tar.gz"
+tar -xzf pku3b-0.14.0-aarch64-apple-darwin.tar.gz
+chmod +x pku3b-0.14.0-aarch64-apple-darwin/pku3b
+ln -sf /tmp/pku3b-0.14.0-aarch64-apple-darwin/pku3b /tmp/pku3b
+/tmp/pku3b --version
 ```
 
 ### 其他平台
 从 [sshwy/pku3b releases](https://github.com/sshwy/pku3b/releases) 下载对应版本。
 
-> **版本说明**: v0.11.0+ 支持公告 (`ann`) 和课表 (`ct`) 功能
+> **版本说明**: 
+> - v0.14.0+: 修复 TLS 握手问题，推荐使用
+> - v0.11.0+: 支持公告 (`ann`) 和课表 (`ct`) 功能，但存在连接问题
 
 ## 登录
 
@@ -89,6 +95,32 @@ echo "" > /tmp/pku3b_login.exp
 ```
 
 ## 踩坑记录
+
+### TLS 握手失败（v0.11.0）
+
+**问题**: 
+```
+Error: login to blackboard: `hyper` client error: received fatal alert: HandshakeFailure
+```
+
+**原因**: pku3b v0.11.0 的 Rust HTTP 客户端（hyper）与 PKU 教学网的 TLS 配置不兼容。
+
+**解决方案**: 升级到 v0.14.0+
+```bash
+cd /tmp
+curl -LO "https://github.com/sshwy/pku3b/releases/download/0.14.0/pku3b-0.14.0-aarch64-apple-darwin.tar.gz"
+tar -xzf pku3b-0.14.0-aarch64-apple-darwin.tar.gz
+chmod +x pku3b-0.14.0-aarch64-apple-darwin/pku3b
+ln -sf /tmp/pku3b-0.14.0-aarch64-apple-darwin/pku3b /tmp/pku3b
+/tmp/pku3b --version  # 应显示 0.14.0
+```
+
+验证修复：
+```bash
+/tmp/pku3b a ls 2>&1 | head -5  # 应正常显示作业列表
+```
+
+### 其他已知问题
 
 - `pku3b init` 需要交互式输入，直接管道输入不工作
 - `pku3b auth status/login` 命令不存在，正确命令是 `pku3b init`
