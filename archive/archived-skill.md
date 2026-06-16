@@ -211,7 +211,7 @@ print(f"找到 {len(attachments)} 个附件")
 ```
 你是课程 "{course_name}" 的专属 agent。
 
-工作目录：/Users/xxx/test
+工作目录：{workspace}
 
 你的任务：
 1. 读取 /tmp/pku_assignments.json
@@ -257,7 +257,7 @@ print(f"找到 {len(attachments)} 个附件")
 
 你的任务是为 "{course_name}" 完成并提交作业 "{assignment_name}"。
 
-工作目录：/Users/xxx/test/{course_name}
+工作目录：{workspace}/{course_name}
 
 ## 作业信息
 - 课程：{course_name}
@@ -270,7 +270,7 @@ print(f"找到 {len(attachments)} 个附件")
 
 ### 步骤1：下载作业要求和附件
 ```bash
-/tmp/pku3b a download {assignment_id} -d /Users/xxx/test/{course_name}/作业/
+/tmp/pku3b a download {assignment_id} -d {workspace}/{course_name}/作业/
 ```
 
 检查下载的文件，阅读作业要求。
@@ -281,11 +281,11 @@ print(f"找到 {len(attachments)} 个附件")
 - 如果是论文/报告：撰写文档
 - 如果是选择题/填空题：完成答题
 
-将完成的作业文件保存到：/Users/xxx/test/{course_name}/作业/
+将完成的作业文件保存到：{workspace}/{course_name}/作业/
 
 ### 步骤3：提交作业
 ```bash
-/tmp/pku3b a submit {assignment_id} -f /Users/xxx/test/{course_name}/作业/完成的作品文件
+/tmp/pku3b a submit {assignment_id} -f {workspace}/{course_name}/作业/完成的作品文件
 ```
 
 注意：
@@ -700,7 +700,7 @@ HTML(string=html_full).write_pdf('{output_pdf_path}')
 
 **并行策略**：
 
-工作目录：/Users/xxx/test
+工作目录：{workspace}
 
 你的任务：
 1. 读取 /tmp/pku_assignments.json
@@ -1062,7 +1062,7 @@ with open('/tmp/pku_announcements.json', 'w') as f:
 ```
 你是课程 "{course_name}" 的专属 agent。
 
-工作目录：/Users/xxx/test
+工作目录：{workspace}
 
 你的任务：
 1. 读取 /tmp/pku_assignments.json 和 /tmp/pku_announcements.json
@@ -1136,8 +1136,6 @@ pip3 install markdown
 python3 << 'PYEOF'
 import markdown
 import sys
-sys.path.insert(0, '/Users/moonshot/Library/Python/3.9/lib/python/site-packages')
-
 with open('{md_path}', 'r', encoding='utf-8') as f:
     md_content = f.read()
 

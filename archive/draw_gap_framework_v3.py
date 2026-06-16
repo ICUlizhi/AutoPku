@@ -189,8 +189,8 @@ ax.text(12.85, 1.3, 'Generalized\n& Explicit', fontsize=8, ha='center', va='cent
 
 # ===================== Save =====================
 plt.tight_layout()
-plt.savefig('/Users/moonshot/Desktop/桌面整理/项目/pku大四下/AutoPku/images/gap_framework_v3.png',
+plt.savefig('images/gap_framework_v3.png',
             dpi=300, bbox_inches='tight', facecolor='white', edgecolor='none')
-plt.savefig('/Users/moonshot/Desktop/桌面整理/项目/pku大四下/AutoPku/images/gap_framework_v3.pdf',
+plt.savefig('images/gap_framework_v3.pdf',
             bbox_inches='tight', facecolor='white', edgecolor='none')
 print("Saved: gap_framework_v3.png / .pdf")
