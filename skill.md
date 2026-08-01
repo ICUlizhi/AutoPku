@@ -51,6 +51,8 @@ description: AutoPku - 自动获取PKU课程通知、完成作业、撰写笔记
 
 直接告诉我要做什么：
 
+在 AutoPku 桌面端中，这个 skill 应被视为已预加载。用户只输入“同步通知”“看看有什么作业”“课程/选课/DDL”等短请求时，不要先凭记忆或旧摘要回答；第一步必须先运行只读 `pku3b` 命令获取当前教学网数据。如果本轮当前终端里没有实际调用这些 `pku3b` 命令，就不能声称完成同步，必须先调用或报告具体失败命令和原因。
+
 | 用户意图示例 | 执行的任务 |
 |-------------|-----------|
 | "同步课程通知" / "看看有什么作业" | 同步所有课程通知和作业 |
@@ -148,16 +150,18 @@ for config in agent_configs:
 ### 安装
 
 ```bash
-# 检查是否已安装
-which pku3b 2>/dev/null || echo "NOT_FOUND"
+# 检查是否已安装，并固定本轮实际路径
+PKU3B="$(command -v pku3b || true)"
+test -n "$PKU3B" || echo "NOT_FOUND"
 
 # 未安装时执行（macOS Apple Silicon 示例）
+mkdir -p "$HOME/.local/bin"
 cd /tmp
 curl -LO "https://github.com/sshwy/pku3b/releases/download/0.11.0/pku3b-0.11.0-aarch64-apple-darwin.tar.gz"
-tar -xzf pku3b-0.11.0-aarch64-apple-arm64.tar.gz
+tar -xzf pku3b-0.11.0-aarch64-apple-darwin.tar.gz
 chmod +x pku3b-0.11.0-aarch64-apple-darwin/pku3b
-ln -sf pku3b-0.11.0-aarch64-apple-darwin/pku3b pku3b
-./pku3b --version
+install -m 755 pku3b-0.11.0-aarch64-apple-darwin/pku3b "$HOME/.local/bin/pku3b"
+pku3b --version
 ```
 
 **重要**: 
@@ -166,62 +170,48 @@ ln -sf pku3b-0.11.0-aarch64-apple-darwin/pku3b pku3b
 
 ### 登录
 
-expect脚本只在初始化执行一次。后续所有命令自动读取 `cfg.toml` 中的凭证。
+`pku3b init` 只在初始化执行一次。后续所有命令自动读取 `cfg.toml` 中的凭证。
 
 **步骤**：
 
 ```bash
 # 1. 检查是否已登录
-/tmp/pku3b a ls 2>&1 || echo "NOT_LOGGED_IN"
+pku3b a ls 2>&1 || echo "NOT_LOGGED_IN"
 ```
 
-如果已登录（正常返回作业列表），跳过步骤 2-4，直接进入任务。
+如果已登录（正常返回作业列表），跳过步骤 2-3，直接进入任务。
 
 如果返回 `NOT_LOGGED_IN`（凭证不存在或密码错误），执行步骤 2：
 
 ```bash
-# 2. 使用 expect 脚本登录（TTY-safe）
-cat > /tmp/pku3b_login.exp << 'EOF'
-#!/usr/bin/expect -f
-set timeout 30
-spawn /tmp/pku3b init
-expect "username:"
-send "学号\r"
-expect "password:"
-send "密码\r"
-expect eof
-EOF
-chmod +x /tmp/pku3b_login.exp
-/tmp/pku3b_login.exp
+# 2. 在当前 Kimi Code 终端里交互式登录
+pku3b init
 ```
 
 ```bash
 # 3. 验证登录成功
-/tmp/pku3b a ls
-
-# 4. 立即覆写 expect 脚本，清除明文密码
-echo "" > /tmp/pku3b_login.exp
+pku3b a ls
 ```
 
-**踩坑**: 直接管道输入会报错 "input device is not a TTY"，必须使用 expect。
+**踩坑**: 直接管道输入会报错 "input device is not a TTY"。在 AutoPku 里不要生成 expect 脚本或明文密码文件，直接让用户在当前嵌入式 Kimi Code 终端回答 `pku3b init` 的交互提示。
 
 ### 常用命令
 
 ```bash
 # 作业
-/tmp/pku3b a ls --all-term              # 所有学期作业（带ANSI颜色码）
-/tmp/pku3b a download <ID> -d <dir>     # 下载附件
-/tmp/pku3b a submit <ID> <file>         # 提交作业
+pku3b a ls --all-term                   # 所有学期作业（带ANSI颜色码）
+pku3b a download <ID> -d <dir>          # 下载附件
+pku3b a submit <ID> <file>              # 提交作业
 
 # 公告 (v0.11.0+)
-/tmp/pku3b ann ls                       # 列出公告
-/tmp/pku3b ann show <ID>                # 查看公告详情
+pku3b ann ls                            # 列出公告
+pku3b ann show <ID>                     # 查看公告详情
 
 # 课表 (v0.11.0+)
-/tmp/pku3b ct -r                        # 获取课表 JSON
+pku3b ct -r                             # 获取课表 JSON
 
 # 选课
-/tmp/pku3b s -d major show              # 主修课程（可能返回302，作为可选）
+pku3b s -d major show                   # 主修课程（可能返回302，作为可选）
 ```
 
 ## Task Skills 索引

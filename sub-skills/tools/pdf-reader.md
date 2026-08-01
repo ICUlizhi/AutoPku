@@ -51,7 +51,7 @@ def read_pdf_pymupdf(pdf_path, pages=None):
     return result
 
 # 使用示例
-pdf_path = "/Users/moonshot/Desktop/桌面整理/项目/pku大四下/逻辑导论/lectures/2.一只麻雀与逻辑学的起源.pdf"
+pdf_path = "path/to/course-material.pdf"
 
 # 读取全部内容
 content = read_pdf_pymupdf(pdf_path)
@@ -104,7 +104,7 @@ def read_pdf_pdfplumber(pdf_path, pages=None):
     return result
 
 # 使用示例
-pdf_path = "/Users/moonshot/Desktop/桌面整理/项目/pku大四下/逻辑导论/lectures/2.一只麻雀与逻辑学的起源.pdf"
+pdf_path = "path/to/course-material.pdf"
 
 content = read_pdf_pdfplumber(pdf_path, pages=[0, 1])
 

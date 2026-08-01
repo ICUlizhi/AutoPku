@@ -162,8 +162,8 @@ AskUserQuestion({
 ### 7. 提交
 
 ```bash
-/tmp/pku3b a ls --all-term | grep -i "{course}"
-/tmp/pku3b a submit {assignment_id} "{pdf_path}"
+pku3b a ls --all-term | grep -i "{course}"
+pku3b a submit {assignment_id} "{pdf_path}"
 ```
 
 ## 输出

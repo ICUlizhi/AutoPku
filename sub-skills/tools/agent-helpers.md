@@ -23,7 +23,7 @@ description: Agent Prompt 模板和 Agent Team 协调工具
    └── 通知摘要.md
 
 4. 下载作业附件（如有）：
-   /tmp/pku3b a download <ID> -d {course}/作业/
+   pku3b a download <ID> -d {course}/作业/
 
 5. 生成 "通知摘要.md"：
    - 课程统计（总/待交/已完成/逾期）
